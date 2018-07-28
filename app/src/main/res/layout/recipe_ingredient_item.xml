@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <TextView
+        android:id="@+id/ingredient_name_tv"
+        android:layout_margin="16dp"
+        android:padding="8dp"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:maxLines="2"
+        app:layout_constraintRight_toLeftOf="@+id/ingredient_quantity_tv"
+        app:layout_constraintLeft_toLeftOf="parent"
+        android:text="Ingredient name"/>
+
+    <TextView
+        android:id="@+id/ingredient_quantity_tv"
+        android:layout_margin="8dp"
+        android:padding="8dp"
+        app:layout_constraintRight_toLeftOf="@+id/ingredient_unit_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="4"/>
+
+    <TextView
+        android:id="@+id/ingredient_unit_tv"
+        android:layout_margin="16dp"
+        android:padding="8dp"
+        app:layout_constraintRight_toRightOf="parent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="grams"/>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@android:color/darker_gray"
+        />
+
+</android.support.constraint.ConstraintLayout>
