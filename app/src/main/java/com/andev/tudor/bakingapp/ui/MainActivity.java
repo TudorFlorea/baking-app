@@ -1,5 +1,6 @@
 package com.andev.tudor.bakingapp.ui;
 
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.LoaderManager;
@@ -27,8 +28,10 @@ import butterknife.ButterKnife;
 public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<ArrayList<Recipe>>{
 
     private final int RECIPE_CARD_WIDTH = 300;
+    private final String RECIPE_LIST_STATE = "recipe_list_state";
 
     private RecipeCardAdapter mRecipeCardAdapter;
+    private Parcelable mRecipeListState;
 
     @BindView(R.id.recipe_cards_rv) RecyclerView mRecipeCardsRV;
 
@@ -38,6 +41,11 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         setContentView(R.layout.activity_main);
 
         ButterKnife.bind(this);
+
+        if (savedInstanceState != null) {
+            mRecipeListState = savedInstanceState.getParcelable(RECIPE_LIST_STATE);
+        }
+
         mRecipeCardsRV.setLayoutManager(
                 new GridLayoutManager(MainActivity.this,
                         DisplayUtils.numberOfColumns(getWindowManager(), RECIPE_CARD_WIDTH ),
@@ -48,6 +56,9 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
         mRecipeCardAdapter = new RecipeCardAdapter(this, null);
         mRecipeCardsRV.setAdapter(mRecipeCardAdapter);
+        if (mRecipeListState != null) {
+            mRecipeCardsRV.getLayoutManager().onRestoreInstanceState(mRecipeListState);
+        }
 
         if (InternetUtils.isNetworkAvailable(this)) {
             getSupportLoaderManager().restartLoader(100, null, this);
@@ -89,5 +100,17 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     @Override
     public void onLoaderReset(@NonNull Loader<ArrayList<Recipe>> loader) {
 
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        outState.putParcelable(RECIPE_LIST_STATE, mRecipeCardsRV.getLayoutManager().onSaveInstanceState());
+        super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        mRecipeListState = savedInstanceState.getParcelable(RECIPE_LIST_STATE);
+        super.onRestoreInstanceState(savedInstanceState);
     }
 }

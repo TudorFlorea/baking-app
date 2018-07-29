@@ -4,10 +4,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.RenderProcessGoneDetail;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -15,6 +17,7 @@ import com.andev.tudor.bakingapp.R;
 import com.andev.tudor.bakingapp.ui.RecipeDetailsActivity;
 import com.andev.tudor.bakingapp.data.Recipe;
 import com.andev.tudor.bakingapp.utils.Constants;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
@@ -54,6 +57,7 @@ public class RecipeCardAdapter extends RecyclerView.Adapter<RecipeCardAdapter.Ca
     public class CardViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
 
         @BindView(R.id.recipe_name_tv) TextView mRecipeName;
+        @BindView(R.id.recipe_image) ImageView mRecipeImage;
         private Recipe mRecipe;
         private int mRecipePosition;
 
@@ -66,6 +70,13 @@ public class RecipeCardAdapter extends RecyclerView.Adapter<RecipeCardAdapter.Ca
         public void setData(Recipe recipe, int recipePosition) {
             mRecipe = recipe;
             mRecipeName.setText(recipe.getName());
+
+            if (TextUtils.isEmpty(recipe.getImage())) {
+                mRecipeImage.setVisibility(View.GONE);
+            } else {
+                Picasso.get().load(recipe.getImage()).into(mRecipeImage);
+            }
+
             mRecipePosition = recipePosition;
         }
 

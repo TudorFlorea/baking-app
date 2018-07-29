@@ -2,6 +2,7 @@ package com.andev.tudor.bakingapp.ui;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -23,6 +24,10 @@ public class IngredientsActivity extends AppCompatActivity {
     @BindView(R.id.ingredients_rv) RecyclerView mIngredientsRV;
     private RecipeIngredientsAdapter mIngredientsAdapter;
 
+    private final String INGREDIENTS_LIST_STATE = "ingredients_list_state";
+    private Parcelable mIngredientsListState;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -32,6 +37,10 @@ public class IngredientsActivity extends AppCompatActivity {
 
         Intent i = getIntent();
 
+        if (savedInstanceState != null) {
+            mIngredientsListState = savedInstanceState.getParcelable(INGREDIENTS_LIST_STATE);
+        }
+
         if (i.hasExtra(Constants.RECIPE_EXTRA)) {
 
             try {
@@ -40,11 +49,26 @@ public class IngredientsActivity extends AppCompatActivity {
                 mIngredientsRV.setLayoutManager(new LinearLayoutManager(this, LinearLayout.VERTICAL, false));
                 mIngredientsAdapter = new RecipeIngredientsAdapter(this, ingredients);
                 mIngredientsRV.setAdapter(mIngredientsAdapter);
+                if (mIngredientsListState != null) {
+                    mIngredientsRV.getLayoutManager().onRestoreInstanceState(mIngredientsListState);
+                }
 
             } catch (NullPointerException npe) {
                 npe.printStackTrace();
             }
         }
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        outState.putParcelable(INGREDIENTS_LIST_STATE, mIngredientsRV.getLayoutManager().onSaveInstanceState());
+        super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        mIngredientsListState = savedInstanceState.getParcelable(INGREDIENTS_LIST_STATE);
+        super.onRestoreInstanceState(savedInstanceState);
     }
 
     @Override

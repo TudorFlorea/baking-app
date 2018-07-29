@@ -72,14 +72,16 @@ public class RecipeDetailsActivity extends AppCompatActivity implements RecipeDe
         if (i.hasExtra(RECIPE_EXTRA)) {
             try {
 
-                mFragmentManager = getSupportFragmentManager();
+                if (savedInstanceState == null)  {
+                    mFragmentManager = getSupportFragmentManager();
 
-                RecipeDetailsFragment detailsFragment = new RecipeDetailsFragment();
-                detailsFragment.setArguments(i.getExtras());
-                mFragmentManager.beginTransaction()
-                        .replace(R.id.recipe_details_fl, detailsFragment).commit();
+                    RecipeDetailsFragment detailsFragment = new RecipeDetailsFragment();
+                    detailsFragment.setArguments(i.getExtras());
+                    mFragmentManager.beginTransaction()
+                            .replace(R.id.recipe_details_fl, detailsFragment).commit();
+                } else {
 
-                //mStepDetailsFragment = (RecipeStepDetailsFragment) mFragmentManager.findFragmentByTag(STEP_DETAILS_FRAGMENT_TAG);
+                }
 
             } catch (NullPointerException npe) {
                 npe.printStackTrace();
@@ -103,6 +105,14 @@ public class RecipeDetailsActivity extends AppCompatActivity implements RecipeDe
             i.putExtra(Constants.STEPS_DATA_TAG, stepsData);
             startActivity(i);
         }
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        outState.putBoolean("fragment_loaded", true);
+
     }
 
     @Override

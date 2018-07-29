@@ -47,6 +47,7 @@ public class RecipeStepDetailsFragment extends Fragment {
     private final String STATE_RESUME_WINDOW = "resumeWindow";
     private final String STATE_RESUME_POSITION = "resumePosition";
     private final String STATE_PLAYER_FULLSCREEN = "playerFullscreen";
+    private final String STATE_PLAYER_READY = "playerReady";
 
     //
 
@@ -68,6 +69,8 @@ public class RecipeStepDetailsFragment extends Fragment {
 
     private int mResumeWindow;
     private long mResumePosition;
+    private boolean mPlayerReady = true;
+
 
     public RecipeStepDetailsFragment() {
 
@@ -81,6 +84,7 @@ public class RecipeStepDetailsFragment extends Fragment {
             mResumeWindow = savedInstanceState.getInt(STATE_RESUME_WINDOW);
             mResumePosition = savedInstanceState.getLong(STATE_RESUME_POSITION);
             mExoPlayerFullscreen = savedInstanceState.getBoolean(STATE_PLAYER_FULLSCREEN);
+            mPlayerReady = savedInstanceState.getBoolean(STATE_PLAYER_READY);
         }
 
     }
@@ -175,9 +179,13 @@ public class RecipeStepDetailsFragment extends Fragment {
     @Override
     public void onSaveInstanceState(Bundle outState) {
 
+        mPlayerReady = mExoPlayerView.getPlayer().getPlayWhenReady();
+
         outState.putInt(STATE_RESUME_WINDOW, mResumeWindow);
         outState.putLong(STATE_RESUME_POSITION, mResumePosition);
         outState.putBoolean(STATE_PLAYER_FULLSCREEN, mExoPlayerFullscreen);
+        outState.putBoolean(STATE_PLAYER_READY, mPlayerReady);
+
 
         super.onSaveInstanceState(outState);
     }
@@ -262,7 +270,7 @@ public class RecipeStepDetailsFragment extends Fragment {
         }
 
         mExoPlayerView.getPlayer().prepare(mVideoSource);
-        mExoPlayerView.getPlayer().setPlayWhenReady(true);
+        mExoPlayerView.getPlayer().setPlayWhenReady(mPlayerReady);
     }
 
 }

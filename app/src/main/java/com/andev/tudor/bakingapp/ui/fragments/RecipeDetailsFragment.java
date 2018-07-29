@@ -3,6 +3,7 @@ package com.andev.tudor.bakingapp.ui.fragments;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -25,6 +26,8 @@ import com.andev.tudor.bakingapp.data.Step;
 import com.andev.tudor.bakingapp.utils.Constants;
 import com.andev.tudor.bakingapp.utils.InterfaceUtils;
 
+import java.util.ArrayList;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
@@ -34,6 +37,11 @@ public class RecipeDetailsFragment extends Fragment implements InterfaceUtils.Re
     private final String RECIPE_EXTRA = "recipe_extra";
     private final String STEP_EXTRA = "step_extra";
     private OnStepSelected mStepListener;
+    private Parcelable mStepListState;
+    private int mFirstVisiblePosition;
+
+    private final String STEP_LIST_STATE = "list_state";
+    private final String FIRST_VISIBLE_POSITION = "last_position";
 
     @BindView(R.id.recipe_steps_rv) RecyclerView mRecipeStepsRV;
     @BindView(R.id.recipe_ingredients_cv) CardView mIngredientsCV;
@@ -43,7 +51,7 @@ public class RecipeDetailsFragment extends Fragment implements InterfaceUtils.Re
     }
 
     public interface OnStepSelected {
-        public void stepSelected(Bundle stepData);
+        void stepSelected(Bundle stepData);
     }
 
     @Override
@@ -69,11 +77,20 @@ public class RecipeDetailsFragment extends Fragment implements InterfaceUtils.Re
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
         try {
             final Recipe recipe = getArguments().getParcelable(RECIPE_EXTRA);
-            mRecipeStepsRV.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayout.VERTICAL, false));
-            mRecipeStepAdapter = new RecipeStepAdapter(getActivity(), recipe.getSteps(), this);
-            mRecipeStepsRV.setAdapter(mRecipeStepAdapter);
+
+
+                mRecipeStepsRV.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayout.VERTICAL, false));
+                mRecipeStepAdapter = new RecipeStepAdapter(getActivity(), recipe.getSteps(), this);
+                mRecipeStepsRV.setAdapter(mRecipeStepAdapter);
+            if (savedInstanceState != null) {
+                mStepListState = savedInstanceState.getParcelable(STEP_LIST_STATE);
+                mRecipeStepsRV.getLayoutManager().onRestoreInstanceState(mStepListState);
+                mFirstVisiblePosition = savedInstanceState.getInt(FIRST_VISIBLE_POSITION);
+                mRecipeStepsRV.getLayoutManager().scrollToPosition(mFirstVisiblePosition);
+            }
 
             mIngredientsCV.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -87,6 +104,25 @@ public class RecipeDetailsFragment extends Fragment implements InterfaceUtils.Re
         }
         catch (NullPointerException npe) {
             npe.printStackTrace();
+        }
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        mStepListState = mRecipeStepsRV.getLayoutManager().onSaveInstanceState();
+        mFirstVisiblePosition = ((LinearLayoutManager) mRecipeStepsRV.getLayoutManager()).findFirstCompletelyVisibleItemPosition();
+
+        outState.putParcelable(STEP_LIST_STATE, mStepListState);
+        outState.putInt(FIRST_VISIBLE_POSITION, mFirstVisiblePosition);
+    }
+
+    @Override
+    public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
+        super.onViewStateRestored(savedInstanceState);
+        if (savedInstanceState != null) {
+            mStepListState = savedInstanceState.getParcelable(STEP_LIST_STATE);
         }
     }
 

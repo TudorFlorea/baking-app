@@ -5,9 +5,11 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -15,6 +17,7 @@ import com.andev.tudor.bakingapp.R;
 import com.andev.tudor.bakingapp.data.Step;
 import com.andev.tudor.bakingapp.utils.Constants;
 import com.andev.tudor.bakingapp.utils.InterfaceUtils;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
@@ -56,6 +59,8 @@ public class RecipeStepAdapter extends RecyclerView.Adapter<RecipeStepAdapter.St
     public class StepViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         @BindView(R.id.recipe_step_tv) TextView mRecipeStepTV;
+        @BindView(R.id.recipe_step_iv) ImageView mRecipeStepIV;
+        @BindView(R.id.recipe_video_iv) ImageView mRecipeVideoIV;
         private Step mStep;
 
         public StepViewHolder(View itemView) {
@@ -66,6 +71,18 @@ public class RecipeStepAdapter extends RecyclerView.Adapter<RecipeStepAdapter.St
 
         public void setData(Step step) {
             mStep = step;
+            if (TextUtils.isEmpty(step.getThumbnailUrl())) {
+                mRecipeStepIV.setVisibility(View.GONE);
+            } else {
+                Picasso.get().load(step.getThumbnailUrl()).into(mRecipeStepIV);
+            }
+
+            if (TextUtils.isEmpty(step.getVideoUrl())) {
+                mRecipeVideoIV.setVisibility(View.GONE);
+            } else {
+                Picasso.get().load(R.drawable.play_arrow_black).into(mRecipeVideoIV);
+            }
+
             mRecipeStepTV.setText(step.getShortDescription());
         }
 
